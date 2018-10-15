@@ -3,124 +3,118 @@
 #include "struct/List.h"
 
 
-const int size = 5;
-
-int values[] = {1, 2, 3, 4, 5};
-char* key = "KEY";
-
-
-static char* should_get_empty_list()
+struct List* initTestingList()
 {
-    struct Link* ll = List.new(values, size);
-    ll = List.free(ll);
-    mu_assert("list length != 0", List.length(ll) == 0);
+    struct List* list = List.new();
+    for (int i = 0; i < 5; i += 1) {
+        List.add(list, Node.new("", i + 1));
+    }
+    return list;
+}
+
+
+static char* null_list()
+{
+    mu_assert("there should not be any list", List.length(NULL) == 0);
     return 0;
 }
 
 
-static char* should_remove_in_the_middle()
+static char* init_empty_list()
 {
-    struct Link* ll = List.new(values, size);
-    ll = List.freeAt(ll, 3);
-    ll = List.freeAt(ll, 0);
-    mu_assert("list length != 3 ", List.length(ll) == 3);
-    List.free(ll);
+    struct List* list = List.new();
+    mu_assert("list length should be 0", List.length(list) == 0);
+    List.free(list);
     return 0;
 }
 
 
-static char* should_remove_last_element()
+static char* adding_element()
 {
-    struct Link* ll = List.new(values, size);
-    ll = List.pop(ll);
-    int length = List.length(ll);
-    struct Link* last = List.getAt(ll, length - 1);
-    mu_assert("list length isn't 4", length == 4);
-    mu_assert("last element isn't 4", last->value == 4);
-    List.free(ll);
+    struct List* list = List.new();
+    List.add(list, Node.new("", 1));
+    mu_assert("list length should be 1", List.length(list) == 1);
+    List.free(list);
     return 0;
 }
 
 
-static char* should_remove_first_element()
+static char* getting_list_length()
 {
-    struct Link* ll = List.new(values, size);
-    ll = List.freeFirst(ll);
-    mu_assert("list length isn't 4", List.length(ll) == 4);
-    mu_assert("0th element isn't 2", List.getAt(ll, 0)->value == 2);
-    List.free(ll);
+    struct List* list = initTestingList();
+    mu_assert("list length should be 5", List.length(list) == 5);
+    List.free(list);
     return 0;
 }
 
 
-static char* should_get_list_length()
+static char* getting_one_particular_element()
 {
-    struct Link* ll = List.new(values, size);
-    mu_assert("list length != 5", List.length(ll) == size);
-    List.free(ll);
+    struct List* list = initTestingList();
+    List.add(list, Node.new("jacques", 26));
+    struct Node* nothing = List.get(list, "keyDoesNotExists");
+    struct Node* jacques = List.get(list, "jacques");
+    mu_assert("list length should be 6", List.length(list) == 6);
+    mu_assert("node value should be 2", Node.value(nothing) == 0);
+    mu_assert("node value should be 26", Node.value(jacques) == 26);
+    List.free(list);
     return 0;
 }
 
 
-static char* should_insert_new_start()
+static char* iteration_over_list()
 {
-    struct Link* ll = List.new(values, size);
-    ll = List.insertFirst(ll, 0);
-    mu_assert("list length != 6", List.length(ll) == 6);
-    mu_assert("0th element isn't 0", List.getAt(ll, 0)->value == 0);
-    List.free(ll);
+    struct List* list = initTestingList();
+    size_t len = List.length(list);
+    for (size_t i = 0; i < len; i += 1) {
+        mu_assert("value should not be 1", Node.value(List.iter(list, i)) != 0);
+    }
+    List.free(list);
     return 0;
 }
 
 
-static char* should_insert_last()
+static char* list_should_contain()
 {
-    struct Link* ll = List.new(values, size);
-    ll = List.add(ll, key, 6);
-    ll = List.add(ll, key, 6);
-    mu_assert("list length != 7", List.length(ll) == 7);
-    mu_assert("6th element isn't 6", List.getAt(ll, 5)->value == 6);
-    List.free(ll);
+    struct List* list = initTestingList();
+    List.add(list, Node.new("jacques", 26));
+    mu_assert("list length should be 6", List.length(list) == 6);
+    mu_assert("list should contains key: 'jacques'", List.contains(list, "jacques"));
+    List.free(list);
     return 0;
 }
 
 
-static char* should_insert_in_the_middle()
+static char* removing_elements()
 {
-    struct Link* ll = List.new(values, size);
-    ll = List.insertAt(ll, 11, 3);
-    mu_assert("list length != 6", List.length(ll) == 6);
-    mu_assert("4th element isn't 11", List.getAt(ll, 3)->value == 11);
-    List.free(ll);
+    struct List* list = List.new();
+    List.add(list, Node.new("jacques", 26));
+    List.add(list, Node.new("felix", 27));
+    List.add(list, Node.new("naika", 28));
+    List.add(list, Node.new("suzanne", 29));
+    mu_assert("list length should be 4", List.length(list) == 4);
+    mu_assert("key 'jacques' should be 26", Node.value(List.get(list, "jacques")) == 26);
+    List.remove(list, "jacques");
+    mu_assert("list length should be 3", List.length(list) == 3);
+    mu_assert("list should not contain 'jacques'", List.contains(list, "jacques") == false);
+    List.free(list);
     return 0;
 }
 
 
-static char* should_contain_4()
-{
-    struct Link* ll = List.new(values, size);
-    mu_assert("list doesn't contain 4", List.contains(ll, 4));
-    List.free(ll);
-    return 0;
-}
-
-
-/**
- * If a test fails, its list won't be free-ed
- */
 static char* all_tests()
 {
-    mu_run_test(should_remove_last_element);
-    mu_run_test(should_remove_in_the_middle);
-    mu_run_test(should_remove_first_element);
-    mu_run_test(should_get_list_length);
-    mu_run_test(should_insert_new_start);
-    mu_run_test(should_insert_in_the_middle);
-    mu_run_test(should_insert_last);
-    mu_run_test(should_contain_4);
-    mu_run_test(should_get_empty_list);
+    mu_run_test(null_list);
+    mu_run_test(init_empty_list);
+    mu_run_test(adding_element);
+    mu_run_test(getting_list_length);
+    mu_run_test(getting_one_particular_element);
+    mu_run_test(iteration_over_list);
+    mu_run_test(list_should_contain);
+    mu_run_test(removing_elements);
     return 0;
 }
 
 
 mu_run(all_tests)
+

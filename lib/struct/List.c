@@ -1,284 +1,269 @@
-#include <stdlib.h>
-#include <stdio.h>
 #include <memory.h>
+#include <stdio.h>
 
 #include "List.h"
 
 
-struct Link* newLink(char* key, int value)
+#define __MAX_KEY_LENGTH 2048
+
+struct Node
 {
-    struct Link* n = calloc(1, sizeof(struct Link));
-    n->key = strndup(key, __MAX_KEY_LENGTH);
+    char* key;
+    int value;
+    struct Node* next;
+};
+
+struct List
+{
+    struct Node* first;
+    size_t length;
+};
+
+
+struct Node* newNode(char* key, int value)
+{
+    struct Node* n = malloc(sizeof(struct Node));
+    n->key = strdup(key);
     n->value = value;
     n->next = NULL;
     return n;
 }
 
 
-struct Link* newLinkedList(int* values, int count)
+void* freeNode(struct Node* node)
 {
-    struct Link* link = NULL;
-    struct Link* root = NULL;
-    struct Link* last = NULL;
-    for (int i = 0; i < count; i += 1) {
-        if (!link) {
-            link = Link.new("", values[i]);
-            if (!root) {
-                root = link;
-            }
-            if (last) {
-                last->next = link;
-            }
+    free(node->key);
+    free(node);
+    return NULL;
+}
+
+
+int nodeValue(struct Node* node)
+{
+    if (!node) {
+        return 0;
+    }
+    return node->value;
+}
+
+
+char* nodeToString(struct Node* node)
+{
+    if (!node) { return NULL; }
+    char* str = calloc(__MAX_KEY_LENGTH, sizeof(char));
+    sprintf(str, "{%s: %d}", node->key, node->value);
+    return str;
+}
+
+
+struct List* newList()
+{
+    struct List* list = malloc(sizeof(struct List));
+    list->first = NULL;
+    list->length = 0;
+    return list;
+}
+
+
+void* freeList(struct List* list)
+{
+    if (!list) {
+        return NULL;
+    }
+    if (!list->first) {
+        free(list);
+        return NULL;
+    }
+    struct Node* head = list->first;
+    while (head) {
+        struct Node* tmp = head;
+        head = head->next;
+        freeNode(tmp);
+    }
+    free(list);
+    return NULL;
+}
+
+
+size_t listLength(struct List* list)
+{
+    if (!list) { return 0; }
+    return list->length;
+}
+
+
+size_t addToList(struct List* list, struct Node* node)
+{
+    if (!list) {
+        return 0;
+    }
+    list->length += 1;
+    if (!list->first) {
+        list->first = node;
+        return list->length;
+    }
+    struct Node* head = list->first;
+    while (head->next) {
+        head = head->next;
+    }
+    head->next = node;
+    return list->length;
+}
+
+
+struct Node* getNodeFromList(struct List* list, char* key)
+{
+    if (!list || !list->first) {
+        return NULL;
+    }
+    struct Node* head = list->first;
+    while (head) {
+        if (0 == strncmp(head->key, key, __MAX_KEY_LENGTH)) {
+            return head;
         }
-        last = link;
-        link = link->next;
-    }
-    return root;
-}
-
-
-struct Link* insertFirst(struct Link* link, int value)
-{
-    struct Link* new = Link.new("", value);
-    new->next = link;
-    return new;
-}
-
-
-struct Link* insertAt(struct Link* link, int value, int position)
-{
-    struct Link* new = Link.new("", value);
-    struct Link* root = link;
-    struct Link* prev = link;
-
-    for (int i = 0; i < position; i += 1) {
-        if (!link->next) break;
-        prev = link;
-        link = link->next;
-    }
-
-    new->next = prev->next;
-    prev->next = new;
-
-    return root;
-}
-
-
-void _subInsertLast(struct Link* link, char* key, int value)
-{
-    if (link->next) {
-        _subInsertLast(link->next, key, value);
-        return;
-    }
-    link->next = Link.new(key, value);
-}
-
-
-struct Link* insertLast(struct Link* link, char* key, int value)
-{
-    if (!link) return Link.new(key, value);
-    _subInsertLast(link, key, value);
-    return link;
-}
-
-
-struct Link* deleteFirst(struct Link* link)
-{
-    if (!link) return link;
-    struct Link* next = link->next;
-    free(link->key);
-    free(link);
-    return next;
-}
-
-
-struct Link* deleteAt(struct Link* link, int position)
-{
-    if (position == 0) return List.freeFirst(link);
-    struct Link* root = link;
-    struct Link* prev = link;
-
-    for (int i = 0; i < position; i += 1) {
-        if (!link->next) break;
-        prev = link;
-        link = link->next;
-    }
-
-    prev->next = link->next;
-    free(link->key);
-    free(link);
-
-    return root;
-}
-
-
-void _subDeleteLast(struct Link* link)
-{
-    if (link->next->next) {
-        _subDeleteLast(link->next);
-        return;
-    }
-    free(link->next->key);
-    free(link->next);
-    link->next = NULL;
-}
-
-
-struct Link* deleteLast(struct Link* link)
-{
-    if (link == NULL) return NULL;
-    if (link->next == NULL) return NULL;
-    _subDeleteLast(link);
-    return link;
-}
-
-
-struct Link* deleteList(struct Link* n)
-{
-    struct Link* tmp;
-    while (n) {
-        tmp = n;
-        n = n->next;
-        free(tmp->key);
-        free(tmp);
+        head = head->next;
     }
     return NULL;
 }
 
 
-int _subLength(struct Link* link)
+size_t removeFromList(struct List* list, char* key)
 {
-    if (link->next) {
-        return 1 + _subLength(link->next);
+    if (!list || !list->first) { return 0; }
+
+    struct Node* head = list->first->next;
+
+    if (0 == strncmp(list->first->key, key, __MAX_KEY_LENGTH)) {
+        freeNode(list->first);
+        list->first = head;
+        list->length -= 1;
+        return list->length;
     }
-    return 1;
-}
 
-
-int listLength(struct Link* link)
-{
-    if (link == NULL) return 0;
-    if (link->next) {
-        return 1 + _subLength(link->next);
-    }
-    return 1;
-}
-
-
-int listContains(struct Link* link, int value)
-{
-    if (link == NULL) return 0;
-    if (link->value == value) return 1;
-    return listContains(link->next, value);
-}
-
-
-struct Link* getAt(struct Link* link, int position)
-{
-    for (int i = 0; i < position && link != NULL; i += 1) {
-        link = link->next;
-    }
-    return link;
-}
-
-
-struct Link* getLink(struct Link* link, char* key)
-{
-    while (link) {
-        if (0 == strncmp(link->key, key, __MAX_KEY_LENGTH)) {
-            break;
-        }
-        link = link->next;
-    }
-    return link;
-}
-
-
-struct Link* removeLink(struct Link* link, char* key)
-{
-    if (0 == strncmp(link->key, key, __MAX_KEY_LENGTH)) {
-        return deleteFirst(link);
-    }
-    struct Link* prev = link;
-    struct Link* head = link->next;
+    struct Node* prev = list->first;
     while (head) {
         if (0 == strncmp(head->key, key, __MAX_KEY_LENGTH)) {
             prev->next = head->next;
-            free(head->key);
-            free(head);
+            freeNode(head);
+            list->length -= 1;
             break;
         }
         prev = head;
         head = head->next;
     }
-    return link;
+    return list->length;
 }
 
 
-struct Link* invertList(struct Link* link)
+bool listContains(struct List* list, char* key)
 {
-    struct Link* current = link;
-    struct Link* prev = NULL;
-    struct Link* next = NULL;
+    if (!list || !list->first) { return false; }
 
-    while (current != NULL) {
-        next = current->next;
-        current->next = prev;
-        prev = current;
-        current = next;
+    struct Node* head = list->first;
+
+    if (0 == strncmp(head->key, key, __MAX_KEY_LENGTH)) {
+        return true;
     }
-    return prev;
+
+    while (head) {
+        if (0 == strncmp(head->key, key, __MAX_KEY_LENGTH)) {
+            return true;
+        }
+        head = head->next;
+    }
+    return false;
 }
 
 
-struct Link* mergeLists(struct Link* a, struct Link* b)
+void invertList(struct List* list)
 {
-    struct Link* ret = NULL;
-    if (!a) return b;
-    if (!b) return a;
+    if (!list || !list->first) { return; }
+    struct Node* head = list->first;
+    struct Node* prev = NULL;
+    struct Node* next = NULL;
+
+    while (head) {
+        next = head->next;
+        head->next = prev;
+        prev = head;
+        head = next;
+    }
+}
+
+
+struct Node* _mergeLists(struct Node* a, struct Node* b)
+{
+    if (!a) { return b; }
+    if (!b) { return a; }
+    struct Node* ret = NULL;
 
     if (a->value <= b->value) {
         ret = a;
-        ret->next = mergeLists(a->next, b);
+        ret->next = _mergeLists(a->next, b);
     } else {
         ret = b;
-        ret->next = mergeLists(a, b->next);
+        ret->next = _mergeLists(a, b->next);
     }
 
     return ret;
 }
 
 
-void displayLinkedList(struct Link* n)
+struct List* mergeLists(struct List* l1, struct List* l2)
 {
-    if (!n) {
-        fprintf(stdout, "\n");
-        return;
-    }
-    fprintf(stdout, " {%s: %d}", n->key, n->value);
-    displayLinkedList(n->next);
+    if (!l1) { return l2; }
+    if (!l2) { return l1; }
+    struct List* list = newList();
+    list->first = _mergeLists(l1->first, l2->first);
+    return list;
 }
 
 
-const struct LinkLibrary Link = {
-    .new = newLink,
+struct Node* iterateOverList(struct List* list, size_t index)
+{
+    if (!list) { return NULL; }
+    struct Node* head = list->first;
+    for (size_t i = 0; head != NULL && i < list->length; i += 1) {
+        if (index == i) { break; }
+        head = head->next;
+    }
+    return head;
+}
+
+
+char* listToString(struct List* list)
+{
+    if (!list || !list->first) { return NULL; }
+    char* str = calloc(list->length * __MAX_KEY_LENGTH, sizeof(char));
+    sprintf(str, " {length: %zu}", list->length);
+    struct Node* head = list->first;
+    while (head) {
+        char* node = nodeToString(head);
+        sprintf(str + strnlen(str, __MAX_KEY_LENGTH), " %s", node);
+        free(node);
+        head = head->next;
+    }
+    return str;
+}
+
+
+const struct NodeLibrary Node = {
+    .new = newNode,
+    .free = freeNode,
+    .value = nodeValue,
+    .toString = nodeToString,
 };
 
-const struct LinkedListLibrary List = {
-    .new = newLinkedList,
-    .insertFirst = insertFirst,
-    .insertAt = insertAt,
-    .add = insertLast,
-    .freeFirst = deleteFirst,
-    .freeAt = deleteAt,
-    .pop = deleteLast,
-    .free = deleteList,
+const struct ListLibrary List = {
+    .new = newList,
+    .free = freeList,
     .length = listLength,
+    .add = addToList,
+    .get = getNodeFromList,
+    .remove = removeFromList,
     .contains = listContains,
-    .getAt = getAt,
-    .get = getLink,
-    .remove = removeLink,
     .invert = invertList,
     .merge = mergeLists,
-    .display = displayLinkedList,
+    .iter = iterateOverList,
+    .toString = listToString,
 };

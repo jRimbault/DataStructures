@@ -1,43 +1,38 @@
-#ifndef CLANGPOOL_LINKEDLIST_H
-#define CLANGPOOL_LINKEDLIST_H
+#ifndef UNITTESTINGC_LIST_H
+#define UNITTESTINGC_LIST_H
 
-#define __MAX_KEY_LENGTH 2048
+#include <stdlib.h>
+#include <stdbool.h>
 
 
-struct Link {
-    struct Link* next;
-    char* key;
-    int value;
+struct Node;
+
+struct List;
+
+struct NodeLibrary
+{
+    struct Node* (* new)(char* key, int value);
+    void* (* free)(struct Node* node);
+    int (* value)(struct Node* node);
+    char* (* toString)(struct Node* node);
 };
 
-
-struct LinkLibrary {
-    struct Link* (* new)(char* key, int);
+struct ListLibrary
+{
+    struct List* (* new)();
+    void* (* free)(struct List* list);
+    size_t (* length)(struct List* list);
+    size_t (* add)(struct List* list, struct Node* node);
+    size_t (* remove)(struct List* list, char* key);
+    struct Node* (* get)(struct List* list, char* key);
+    bool (* contains)(struct List* list, char* key);
+    void (* invert)(struct List* list);
+    struct List* (* merge)(struct List* l1, struct List* l2);
+    struct Node* (* iter)(struct List* list, size_t index);
+    char* (* toString)(struct List* list);
 };
 
+extern const struct NodeLibrary Node;
+extern const struct ListLibrary List;
 
-struct LinkedListLibrary {
-    struct Link* (* new)(int*, int);
-    struct Link* (* insertFirst)(struct Link*, int);
-    struct Link* (* insertAt)(struct Link*, int, int);
-    struct Link* (* add)(struct Link*, char*, int);
-    struct Link* (* freeFirst)(struct Link*);
-    struct Link* (* freeAt)(struct Link*, int);
-    struct Link* (* pop)(struct Link*);
-    struct Link* (* free)(struct Link*);
-    int (* length)(struct Link*);
-    int (* contains)(struct Link*, int);
-    struct Link* (* getAt)(struct Link*, int);
-    struct Link* (* get)(struct Link*, char*);
-    struct Link* (* remove)(struct Link*, char*);
-    struct Link* (* invert)(struct Link*);
-    struct Link* (* merge)(struct Link*, struct Link*);
-    void (* display)(struct Link*);
-};
-
-
-extern const struct LinkLibrary Link;
-
-extern const struct LinkedListLibrary List;
-
-#endif //CLANGPOOL_LINKEDLIST_H
+#endif //UNITTESTINGC_LIST_H

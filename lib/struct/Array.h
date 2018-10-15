@@ -1,5 +1,5 @@
-#ifndef CLANGPOOL_ARRAY_H
-#define CLANGPOOL_ARRAY_H
+#ifndef UNITTESTINGC_ARRAY_H
+#define UNITTESTINGC_ARRAY_H
 
 #include <stdlib.h>
 
@@ -63,4 +63,4 @@ struct ArrayLibrary {
 
 extern const struct ArrayLibrary Array;
 
-#endif //CLANGPOOL_ARRAY_H
+#endif //UNITTESTINGC_ARRAY_H

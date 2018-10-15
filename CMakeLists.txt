@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.10)
-project(ClangPool C)
+project(UnitTestingC)
 set(CMAKE_C_STANDARD 99)
 
 # Libraries
 add_library(
-        ClangPoolLib
+        MainLib
         lib/minunit.h
         lib/library.c
         lib/library.h
@@ -47,18 +47,16 @@ add_library(
         lib/struct/HashMap.c
         lib/struct/HashMap.h
 )
-target_link_libraries(HashmapLibrary ListLibrary)
-target_link_libraries(ClangPoolLib HashmapLibrary ListLibrary)
 
 # Main
 add_executable(PoolTests tests/main.c)
 target_include_directories(PoolTests PRIVATE lib)
-target_link_libraries(PoolTests ClangPoolLib ArgsLibrary)
+target_link_libraries(PoolTests MainLib ArgsLibrary HashmapLibrary ListLibrary)
 
-# Linked List
-add_executable(LinkedListTest tests/test_list.c)
-target_include_directories(LinkedListTest PRIVATE lib)
-target_link_libraries(LinkedListTest ListLibrary)
+# List
+add_executable(ListTest tests/test_list.c)
+target_include_directories(ListTest PRIVATE lib)
+target_link_libraries(ListTest ListLibrary)
 
 # Array
 add_executable(ArrayTest tests/test_array.c)
@@ -82,4 +80,4 @@ target_link_libraries(FileTest FileLibrary)
 # HashMap
 add_executable(HashmapTest tests/test_hashmap.c)
 target_include_directories(HashmapTest PRIVATE lib)
-target_link_libraries(HashmapTest HashmapLibrary)
+target_link_libraries(HashmapTest HashmapLibrary ListLibrary)

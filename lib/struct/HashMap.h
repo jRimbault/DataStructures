@@ -1,5 +1,5 @@
-#ifndef CLANGPOOL_HASHMAP_H
-#define CLANGPOOL_HASHMAP_H
+#ifndef UNITTESTINGC_HASHMAP_H
+#define UNITTESTINGC_HASHMAP_H
 
 #include <stdlib.h>
 
@@ -31,4 +31,4 @@ struct HashMapLibrary
 
 extern const struct HashMapLibrary HashMap;
 
-#endif //CLANGPOOL_HASHMAP_H
+#endif //UNITTESTINGC_HASHMAP_H
