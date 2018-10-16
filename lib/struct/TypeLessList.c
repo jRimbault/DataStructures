@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "List.h"
+#include "TypeLessList.h"
 
 
 #define __MAX_KEY_LENGTH 2048
@@ -10,7 +10,7 @@
 struct Node
 {
     char* key;
-    int value;
+    void* value;
     struct Node* next;
 };
 
@@ -21,7 +21,7 @@ struct List
 };
 
 
-struct Node* newNode(char* key, int value)
+struct Node* newNode(char* key, void* value)
 {
     struct Node* n = malloc(sizeof(struct Node));
     n->key = strdup(key);
@@ -39,10 +39,10 @@ void* freeNode(struct Node* node)
 }
 
 
-int nodeValue(struct Node* node)
+void* nodeValue(struct Node* node)
 {
     if (!node) {
-        return 0;
+        return NULL;
     }
     return node->value;
 }
@@ -52,7 +52,7 @@ char* nodeToString(struct Node* node)
 {
     if (!node) { return NULL; }
     char* str = calloc(__MAX_KEY_LENGTH, sizeof(char));
-    sprintf(str, "{%s: %d}", node->key, node->value);
+    sprintf(str, "{%s: %p}", node->key, node->value);
     return str;
 }
 

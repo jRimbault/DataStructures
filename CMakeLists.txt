@@ -48,6 +48,14 @@ add_library(
         lib/struct/HashMap.h
 )
 
+add_library(
+        TypeLessHashMap
+        lib/struct/TypeLessList.c
+        lib/struct/TypeLessList.h
+        lib/struct/TypeLessHashMap.c
+        lib/struct/TypeLessHashMap.h
+)
+
 # Main
 add_executable(PoolTests tests/main.c)
 target_include_directories(PoolTests PRIVATE lib)
@@ -81,3 +89,8 @@ target_link_libraries(FileTest FileLibrary)
 add_executable(HashmapTest tests/test_hashmap.c)
 target_include_directories(HashmapTest PRIVATE lib)
 target_link_libraries(HashmapTest HashmapLibrary ListLibrary)
+
+# Typeless HashMap
+add_executable(TypelessHashmapTest tests/test_hashmap.c)
+target_include_directories(TypelessHashmapTest PRIVATE lib)
+target_link_libraries(TypelessHashmapTest TypeLessHashMap)
