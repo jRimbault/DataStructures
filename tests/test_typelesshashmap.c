@@ -1,4 +1,5 @@
 
+#include <stdbool.h>
 #include "minunit.h"
 #include "struct/TypeLessHashMap.h"
 
@@ -147,6 +148,47 @@ static char* iterate_over_map()
 }
 
 
+struct HashMap* defineDict(bool rule1, int rule2)
+{
+    struct HashMap* hm = HashMap.new(1024);
+    HashMap.put(hm, "rule1", (void*) rule1);
+    HashMap.put(hm, "rule2", (void*) rule2);
+    return hm;
+}
+
+
+void* getBackRuleFrom(struct HashMap* hm, char* section, char* rule)
+{
+    return HashMap.get(HashMap.get(hm, section), rule);
+}
+
+
+static char* typeless_mush_of_dangerous_void()
+{
+    struct HashMap* hm = HashMap.new(1024);
+
+    HashMap.put(hm, "section1", defineDict(true, 58));
+    HashMap.put(hm, "section2", defineDict(false, -6));
+
+    /** get back the rule1 of each section */
+    bool res1 = getBackRuleFrom(hm, "section1", "rule1");
+    mu_assert("should be true (1)", res1 == true);
+    res1 = getBackRuleFrom(hm, "section2", "rule1");
+    mu_assert("should be false (2)", res1 == false);
+
+    /** get back the rule2 of each section */
+    int res2 = getBackRuleFrom(hm, "section1", "rule2");
+    mu_assert("should be 58 (3)", res2 == 58);
+    res2 = getBackRuleFrom(hm, "section2", "rule2");
+    mu_assert("should be -6 (4)", res2 == -6);
+
+    HashMap.free(HashMap.get(hm, "section1"));
+    HashMap.free(HashMap.get(hm, "section2"));
+    HashMap.free(hm);
+    return 0;
+}
+
+
 static char* tests()
 {
     mu_run_test(init_hashmap);
@@ -157,6 +199,7 @@ static char* tests()
     mu_run_test(build_big_list_in_small_map);
     mu_run_test(build_big_list_in_big_map);
     mu_run_test(iterate_over_map);
+    mu_run_test(typeless_mush_of_dangerous_void);
     return 0;
 }
 

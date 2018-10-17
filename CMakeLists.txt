@@ -91,6 +91,6 @@ target_include_directories(HashmapTest PRIVATE lib)
 target_link_libraries(HashmapTest HashmapLibrary ListLibrary)
 
 # Typeless HashMap
-add_executable(TypelessHashmapTest tests/test_hashmap.c)
+add_executable(TypelessHashmapTest tests/test_typelesshashmap.c)
 target_include_directories(TypelessHashmapTest PRIVATE lib)
 target_link_libraries(TypelessHashmapTest TypeLessHashMap)

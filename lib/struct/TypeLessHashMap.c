@@ -46,6 +46,7 @@ struct HashMap* newHashMap(size_t size)
 
 void* freeHashMap(struct HashMap* hm)
 {
+    if (!hm) { return NULL; }
     for (size_t i = 0; i < hm->capacity; i += 1) {
         hm->map[i] = List.free(hm->map[i]);
     }
