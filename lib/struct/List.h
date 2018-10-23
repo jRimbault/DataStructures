@@ -14,6 +14,7 @@ struct NodeLibrary
     struct Node* (* new)(char* key, int value);
     void* (* free)(struct Node* node);
     int (* value)(struct Node* node);
+    char* (* key)(struct Node* node);
     char* (* toString)(struct Node* node);
 };
 

@@ -49,12 +49,25 @@ add_library(
 )
 
 add_library(
-        TypeLessHashMap
+        TypeLessListLibrary
         lib/struct/TypeLessList.c
         lib/struct/TypeLessList.h
+)
+
+add_library(
+        TypeLessHashMap
         lib/struct/TypeLessHashMap.c
         lib/struct/TypeLessHashMap.h
 )
+target_link_libraries(TypeLessHashMap TypeLessListLibrary)
+
+add_library(
+        ParallelLibrary
+        lib/Parallel.c
+        lib/Parallel.h
+)
+find_package(Threads)
+target_link_libraries(ParallelLibrary TypeLessListLibrary ${CMAKE_THREAD_LIBS_INIT})
 
 # Main
 add_executable(PoolTests tests/main.c)
@@ -94,3 +107,8 @@ target_link_libraries(HashmapTest HashmapLibrary ListLibrary)
 add_executable(TypelessHashmapTest tests/test_typelesshashmap.c)
 target_include_directories(TypelessHashmapTest PRIVATE lib)
 target_link_libraries(TypelessHashmapTest TypeLessHashMap)
+
+# Async
+add_executable(ParallelTest tests/test_parallel.c)
+target_include_directories(ParallelTest PRIVATE lib)
+target_link_libraries(ParallelTest ParallelLibrary)

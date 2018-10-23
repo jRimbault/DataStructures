@@ -48,6 +48,15 @@ int nodeValue(struct Node* node)
 }
 
 
+char* nodeKey(struct Node* node)
+{
+    if (!node) {
+        return NULL;
+    }
+    return node->key;
+}
+
+
 char* nodeToString(struct Node* node)
 {
     if (!node) { return NULL; }
@@ -252,6 +261,7 @@ const struct NodeLibrary Node = {
     .new = newNode,
     .free = freeNode,
     .value = nodeValue,
+    .key = nodeKey,
     .toString = nodeToString,
 };
 

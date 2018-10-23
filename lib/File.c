@@ -26,7 +26,7 @@ size_t readFileToBuffer(char* file, char** buffer)
         return 0;
     }
     size_t size = (size_t) offEnd;
-    *buffer = malloc((size_t) (size + (int) +sizeof(char)));
+    *buffer = calloc(size + 1, sizeof(char));
     if (NULL == *buffer) {
         return 0;
     }

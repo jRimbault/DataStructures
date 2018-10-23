@@ -12,8 +12,10 @@ struct List;
 struct NodeLibrary
 {
     struct Node* (* new)(char* key, void* value);
+    void (* set)(struct Node* node, void* value);
     void* (* free)(struct Node* node);
     void* (* value)(struct Node* node);
+    char* (* key)(struct Node* node);
     char* (* toString)(struct Node* node);
 };
 

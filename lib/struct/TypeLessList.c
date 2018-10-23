@@ -31,6 +31,12 @@ struct Node* newNode(char* key, void* value)
 }
 
 
+void resetNode(struct Node* node, void* value)
+{
+    node->value = value;
+}
+
+
 void* freeNode(struct Node* node)
 {
     free(node->key);
@@ -45,6 +51,15 @@ void* nodeValue(struct Node* node)
         return NULL;
     }
     return node->value;
+}
+
+
+char* nodeKey(struct Node* node)
+{
+    if (!node) {
+        return NULL;
+    }
+    return node->key;
 }
 
 
@@ -250,8 +265,10 @@ char* listToString(struct List* list)
 
 const struct NodeLibrary Node = {
     .new = newNode,
+    .set = resetNode,
     .free = freeNode,
     .value = nodeValue,
+    .key = nodeKey,
     .toString = nodeToString,
 };
 
