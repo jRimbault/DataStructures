@@ -17,6 +17,7 @@ struct Node
 struct List
 {
     struct Node* first;
+    struct Node* current;
     size_t length;
 };
 
@@ -31,7 +32,7 @@ struct Node* newNode(char* key, int value)
 }
 
 
-void* freeNode(struct Node* node)
+void* node_free(struct Node* node)
 {
     free(node->key);
     free(node);
@@ -39,7 +40,7 @@ void* freeNode(struct Node* node)
 }
 
 
-int nodeValue(struct Node* node)
+int node_get_value(struct Node* node)
 {
     if (!node) {
         return 0;
@@ -48,7 +49,7 @@ int nodeValue(struct Node* node)
 }
 
 
-char* nodeKey(struct Node* node)
+char* node_get_key(struct Node* node)
 {
     if (!node) {
         return NULL;
@@ -57,7 +58,7 @@ char* nodeKey(struct Node* node)
 }
 
 
-char* nodeToString(struct Node* node)
+char* node_to_chars(struct Node* node)
 {
     if (!node) { return NULL; }
     char* str = calloc(__MAX_KEY_LENGTH, sizeof(char));
@@ -66,7 +67,7 @@ char* nodeToString(struct Node* node)
 }
 
 
-struct List* newList()
+struct List* list_new()
 {
     struct List* list = malloc(sizeof(struct List));
     list->first = NULL;
@@ -75,7 +76,7 @@ struct List* newList()
 }
 
 
-void* freeList(struct List* list)
+void* list_free(struct List* list)
 {
     if (!list) {
         return NULL;
@@ -88,21 +89,21 @@ void* freeList(struct List* list)
     while (head) {
         struct Node* tmp = head;
         head = head->next;
-        freeNode(tmp);
+        node_free(tmp);
     }
     free(list);
     return NULL;
 }
 
 
-size_t listLength(struct List* list)
+size_t list_length(struct List* list)
 {
     if (!list) { return 0; }
     return list->length;
 }
 
 
-size_t addToList(struct List* list, struct Node* node)
+size_t list_add_node(struct List* list, struct Node* node)
 {
     if (!list) {
         return 0;
@@ -110,6 +111,7 @@ size_t addToList(struct List* list, struct Node* node)
     list->length += 1;
     if (!list->first) {
         list->first = node;
+        list->current = node;
         return list->length;
     }
     struct Node* head = list->first;
@@ -121,7 +123,7 @@ size_t addToList(struct List* list, struct Node* node)
 }
 
 
-struct Node* getNodeFromList(struct List* list, char* key)
+struct Node* node_get_node_by_key(struct List* list, char* key)
 {
     if (!list || !list->first) {
         return NULL;
@@ -137,14 +139,14 @@ struct Node* getNodeFromList(struct List* list, char* key)
 }
 
 
-size_t removeFromList(struct List* list, char* key)
+size_t list_remove_by_key(struct List* list, char* key)
 {
     if (!list || !list->first) { return 0; }
 
     struct Node* head = list->first->next;
 
     if (0 == strncmp(list->first->key, key, __MAX_KEY_LENGTH)) {
-        freeNode(list->first);
+        node_free(list->first);
         list->first = head;
         list->length -= 1;
         return list->length;
@@ -154,7 +156,7 @@ size_t removeFromList(struct List* list, char* key)
     while (head) {
         if (0 == strncmp(head->key, key, __MAX_KEY_LENGTH)) {
             prev->next = head->next;
-            freeNode(head);
+            node_free(head);
             list->length -= 1;
             break;
         }
@@ -165,7 +167,7 @@ size_t removeFromList(struct List* list, char* key)
 }
 
 
-bool listContains(struct List* list, char* key)
+bool list_contains(struct List* list, char* key)
 {
     if (!list || !list->first) { return false; }
 
@@ -185,7 +187,7 @@ bool listContains(struct List* list, char* key)
 }
 
 
-void invertList(struct List* list)
+void list_invert(struct List* list)
 {
     if (!list || !list->first) { return; }
     struct Node* head = list->first;
@@ -201,7 +203,7 @@ void invertList(struct List* list)
 }
 
 
-struct Node* _mergeLists(struct Node* a, struct Node* b)
+struct Node* _list_merge(struct Node* a, struct Node* b)
 {
     if (!a) { return b; }
     if (!b) { return a; }
@@ -209,46 +211,45 @@ struct Node* _mergeLists(struct Node* a, struct Node* b)
 
     if (a->value <= b->value) {
         ret = a;
-        ret->next = _mergeLists(a->next, b);
+        ret->next = _list_merge(a->next, b);
     } else {
         ret = b;
-        ret->next = _mergeLists(a, b->next);
+        ret->next = _list_merge(a, b->next);
     }
 
     return ret;
 }
 
 
-struct List* mergeLists(struct List* l1, struct List* l2)
+struct List* list_merge(struct List* l1, struct List* l2)
 {
     if (!l1) { return l2; }
     if (!l2) { return l1; }
-    struct List* list = newList();
-    list->first = _mergeLists(l1->first, l2->first);
+    struct List* list = list_new();
+    list->first = _list_merge(l1->first, l2->first);
     return list;
 }
 
 
-struct Node* iterateOverList(struct List* list, size_t index)
+struct Node* list_iterator(struct List* list, size_t index)
 {
     if (!list) { return NULL; }
-    struct Node* head = list->first;
-    for (size_t i = 0; head != NULL && i < list->length; i += 1) {
-        if (index == i) { break; }
-        head = head->next;
-    }
-    return head;
+    if (!list->current) { return NULL; }
+    if (index >= list->length) { return NULL; }
+    struct Node* n = list->current;
+    list->current = list->current->next;
+    return n;
 }
 
 
-char* listToString(struct List* list)
+char* list_to_chars(struct List* list)
 {
     if (!list || !list->first) { return NULL; }
     char* str = calloc(list->length * __MAX_KEY_LENGTH, sizeof(char));
     sprintf(str, " {length: %zu}", list->length);
     struct Node* head = list->first;
     while (head) {
-        char* node = nodeToString(head);
+        char* node = node_to_chars(head);
         sprintf(str + strnlen(str, __MAX_KEY_LENGTH), " %s", node);
         free(node);
         head = head->next;
@@ -259,22 +260,22 @@ char* listToString(struct List* list)
 
 const struct NodeLibrary Node = {
     .new = newNode,
-    .free = freeNode,
-    .value = nodeValue,
-    .key = nodeKey,
-    .toString = nodeToString,
+    .free = node_free,
+    .value = node_get_value,
+    .key = node_get_key,
+    .toString = node_to_chars,
 };
 
 const struct ListLibrary List = {
-    .new = newList,
-    .free = freeList,
-    .length = listLength,
-    .add = addToList,
-    .get = getNodeFromList,
-    .remove = removeFromList,
-    .contains = listContains,
-    .invert = invertList,
-    .merge = mergeLists,
-    .iter = iterateOverList,
-    .toString = listToString,
+    .new = list_new,
+    .free = list_free,
+    .length = list_length,
+    .add = list_add_node,
+    .get = node_get_node_by_key,
+    .remove = list_remove_by_key,
+    .contains = list_contains,
+    .invert = list_invert,
+    .merge = list_merge,
+    .iter = list_iterator,
+    .toString = list_to_chars,
 };

@@ -8,7 +8,7 @@
 #include "struct/TypeLessList.h"
 
 
-void joinAllWorkers(size_t nThreads, pthread_t* loop)
+void join_all_workers(size_t nThreads, pthread_t* loop)
 {
     for (size_t i = 0; i < nThreads; i += 1) {
         pthread_join(loop[i], NULL);
@@ -17,7 +17,7 @@ void joinAllWorkers(size_t nThreads, pthread_t* loop)
 }
 
 
-void forLoop(size_t nThreads, void* (* task)(void*), void* o)
+void parallel_for_loop(size_t nThreads, void* (* task)(void*), void* o)
 {
     pthread_t* loop = malloc(nThreads * sizeof(pthread_t));
     for (size_t i = 0; i < nThreads; i += 1) {
@@ -26,17 +26,17 @@ void forLoop(size_t nThreads, void* (* task)(void*), void* o)
             fprintf(stderr, "Can't create thread: [%s]\n", strerror(err));
         }
     }
-    joinAllWorkers(nThreads, loop);
+    join_all_workers(nThreads, loop);
 }
 
 
-void autoLoop(void* (* task)(void*), void* o)
+void parallel_auto_loop(void* (* task)(void*), void* o)
 {
-    forLoop((size_t) sysconf(_SC_NPROCESSORS_ONLN), task, o);
+    parallel_for_loop((size_t) sysconf(_SC_NPROCESSORS_ONLN), task, o);
 }
 
 
-void forEach(void* (* task)(void*), struct List* list)
+void parallel_for_each(void* (* task)(void*), struct List* list)
 {
     size_t length = List.length(list);
     pthread_t* loop = malloc(length * sizeof(pthread_t));
@@ -46,12 +46,12 @@ void forEach(void* (* task)(void*), struct List* list)
             fprintf(stderr, "Can't create thread: [%s]\n", strerror(err));
         }
     }
-    joinAllWorkers(length, loop);
+    join_all_workers(length, loop);
 }
 
 
 const struct _parallel Parallel = {
-    .forLoop = forLoop,
-    .autoLoop = autoLoop,
-    .forEach = forEach,
+    .forLoop = parallel_for_loop,
+    .autoLoop = parallel_auto_loop,
+    .forEach = parallel_for_each,
 };

@@ -5,13 +5,13 @@
 #include "File.h"
 
 
-bool writeToFile(char* file, char* buffer)
+bool file_write_to(char* file, char* buffer)
 {
     return false;
 }
 
 
-size_t readFileToBuffer(char* file, char** buffer)
+size_t file_read_to_buffer(char* file, char** buffer)
 {
     FILE* fd = fopen(file, "rb");
     if (NULL == fd) {
@@ -44,6 +44,6 @@ size_t readFileToBuffer(char* file, char** buffer)
 
 
 const struct FileLibrary File = {
-    .write = writeToFile,
-    .read = readFileToBuffer,
+    .write = file_write_to,
+    .read = file_read_to_buffer,
 };

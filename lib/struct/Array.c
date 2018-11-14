@@ -15,7 +15,7 @@ size_t getStartSize(long count)
 }
 
 
-struct Array* _newEmpty()
+struct Array* array_new_empty()
 {
     struct Array* new = calloc(1, sizeof(struct Array));
     new->size = ARRAY_STARTING_SIZE;
@@ -25,7 +25,7 @@ struct Array* _newEmpty()
 }
 
 
-struct Array* newEmptyArray(long size)
+struct Array* array_new(long size)
 {
     struct Array* new = calloc(1, sizeof(struct Array));
     new->size = getStartSize(size);
@@ -35,9 +35,9 @@ struct Array* newEmptyArray(long size)
 }
 
 
-struct Array* newArray(const long* values, long length)
+struct Array* array_new_from(const long* values, long length)
 {
-    struct Array* new = newEmptyArray(getStartSize(length));
+    struct Array* new = array_new(getStartSize(length));
     new->length = length;
     for (int i = 0; i < length; i += 1) {
         new->values[i] = values[i];
@@ -46,35 +46,25 @@ struct Array* newArray(const long* values, long length)
 }
 
 
-void freeArray(struct Array* a)
+void array_free(struct Array* a)
 {
     free(a->values);
     free(a);
 }
 
 
-long* copyArray(struct Array* array, size_t size)
+struct Array* array_expand(struct Array* array)
 {
-    long* copy = calloc(size, sizeof(long));
-    for (long i = 0; i < array->length; i += 1) {
-        copy[i] = array->values[i];
-    }
-    return copy;
-}
-
-
-struct Array* expand(struct Array* array)
-{
-    struct Array* new = newArray(array->values, array->size);
-    freeArray(array);
+    struct Array* new = array_new_from(array->values, array->size);
+    array_free(array);
     return new;
 }
 
 
-struct Array* add(struct Array* a, long n)
+struct Array* array_add(struct Array* a, long n)
 {
     if (a->length == a->size) {
-        a = expand(a);
+        a = array_expand(a);
     }
     a->values[a->length] = n;
     a->length += 1;
@@ -82,15 +72,15 @@ struct Array* add(struct Array* a, long n)
 }
 
 
-struct Array* clone(struct Array* a)
+struct Array* array_clone(struct Array* a)
 {
-    return newArray(a->values, a->length);
+    return array_new_from(a->values, a->length);
 }
 
 
-struct Array* merge(struct Array* a, struct Array* b)
+struct Array* array_merge(struct Array* a, struct Array* b)
 {
-    struct Array* new = newEmptyArray(a->length + b->length);
+    struct Array* new = array_new(a->length + b->length);
     long i = 0;
     long j = 0;
     long k = 0;
@@ -113,31 +103,31 @@ struct Array* merge(struct Array* a, struct Array* b)
 }
 
 
-struct Array* subArray(struct Array* a, long i, long j)
+struct Array* array_sub_array(struct Array* a, long i, long j)
 {
     long length = j - i;
-    struct Array* new = newEmptyArray(length);
+    struct Array* new = array_new(length);
     memcpy(new->values, &a->values[i], length * sizeof(long));
     new->length = length;
     return new;
 }
 
 
-struct Array* sort(struct Array* a)
+struct Array* array_sort(struct Array* a)
 {
     if (a->length < 2) return a;
 
-    struct Array* half1 = subArray(a, 0, a->length / 2);
-    struct Array* half2 = subArray(a, a->length / 2, a->length);
+    struct Array* half1 = array_sub_array(a, 0, a->length / 2);
+    struct Array* half2 = array_sub_array(a, a->length / 2, a->length);
 
-    a = merge(sort(half1), sort(half2));
-    freeArray(half1);
-    freeArray(half2);
+    a = array_merge(array_sort(half1), array_sort(half2));
+    array_free(half1);
+    array_free(half2);
     return a;
 }
 
 
-struct Array* forEach(struct Array* a, long (* fun)(long))
+struct Array* array_for_each(struct Array* a, long (* fun)(long))
 {
     for (long i = 0; i < a->length; i += 1) {
         a->values[i] = fun(a->values[i]);
@@ -146,7 +136,7 @@ struct Array* forEach(struct Array* a, long (* fun)(long))
 }
 
 
-long reduce(struct Array* a, long (* reducer)(long, long), long b)
+long array_reduce(struct Array* a, long (* reducer)(long, long), long b)
 {
     long r = b;
     for (long i = 0; i < a->length; i += 1) {
@@ -157,14 +147,14 @@ long reduce(struct Array* a, long (* reducer)(long, long), long b)
 
 
 const struct ArrayLibrary Array = {
-    .empty = _newEmpty,
-    .new = newArray,
-    .push = add,
-    .clone = clone,
-    .forEach = forEach,
-    .reduce = reduce,
-    .merge = merge,
-    .subArray = subArray,
-    .sort = sort,
-    .free = freeArray,
+    .empty = array_new_empty,
+    .new = array_new_from,
+    .push = array_add,
+    .clone = array_clone,
+    .forEach = array_for_each,
+    .reduce = array_reduce,
+    .merge = array_merge,
+    .subArray = array_sub_array,
+    .sort = array_sort,
+    .free = array_free,
 };

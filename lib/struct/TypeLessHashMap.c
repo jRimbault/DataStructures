@@ -25,13 +25,13 @@ size_t hashcode(char* str)
 }
 
 
-size_t indexOfString(struct HashMap* hm, char* str)
+size_t hashcode_index(struct HashMap* hm, char* str)
 {
     return hashcode(str) % hm->capacity;
 }
 
 
-struct HashMap* newHashMap(size_t size)
+struct HashMap* hashmap_new(size_t size)
 {
     struct HashMap* hm = malloc(sizeof(struct HashMap));
     hm->map = malloc(size * sizeof(struct List*));
@@ -44,7 +44,7 @@ struct HashMap* newHashMap(size_t size)
 }
 
 
-void* freeHashMap(struct HashMap* hm)
+void* hashmap_free(struct HashMap* hm)
 {
     if (!hm) { return NULL; }
     for (size_t i = 0; i < hm->capacity; i += 1) {
@@ -56,39 +56,39 @@ void* freeHashMap(struct HashMap* hm)
 }
 
 
-size_t getHashMapSize(struct HashMap* hm)
+size_t hashmap_get_size(struct HashMap* hm)
 {
     return hm->size;
 }
 
 
-size_t getHashMapCapacity(struct HashMap* hm)
+size_t hashmap_get_capacity(struct HashMap* hm)
 {
     return hm->capacity;
 }
 
 
-size_t addNewElement(struct HashMap* hm, char* key, void* value)
+size_t hashmap_put(struct HashMap* hm, char* key, void* value)
 {
     if (HashMap.get(hm, key)) {
         HashMap.remove(hm, key);
     }
-    size_t index = indexOfString(hm, key);
+    size_t index = hashcode_index(hm, key);
     List.add(hm->map[index], Node.new(key, value));
     hm->size += 1;
     return hm->size;
 }
 
 
-void* getElement(struct HashMap* hm, char* key)
+void* hashmap_get(struct HashMap* hm, char* key)
 {
-    size_t index = indexOfString(hm, key);
+    size_t index = hashcode_index(hm, key);
     struct Node* node = List.get(hm->map[index], key);
     return Node.value(node);
 }
 
 
-void* iteratorOverMap(struct HashMap* hm, size_t index)
+void* hashmap_iterator(struct HashMap* hm, size_t index)
 {
     if (index >= hm->size) { return 0; }
     for (size_t i = 0; i < hm->capacity; i += 1) {
@@ -102,9 +102,9 @@ void* iteratorOverMap(struct HashMap* hm, size_t index)
 }
 
 
-size_t removeElement(struct HashMap* hm, char* key)
+size_t hashmap_delete(struct HashMap* hm, char* key)
 {
-    size_t index = indexOfString(hm, key);
+    size_t index = hashcode_index(hm, key);
     size_t len = List.length(hm->map[index]);
     if (!len) {
         return hm->size;
@@ -118,7 +118,7 @@ size_t removeElement(struct HashMap* hm, char* key)
 }
 
 
-void hashMapInfos(struct HashMap* hm)
+void hashmap_info(struct HashMap* hm)
 {
     if (!hm) { return; }
     fprintf(stdout, "Number of buckets : %zu\n", hm->capacity);
@@ -126,10 +126,10 @@ void hashMapInfos(struct HashMap* hm)
 }
 
 
-void displayHashMap(struct HashMap* hm)
+void hashmap_full_display(struct HashMap* hm)
 {
     if (!hm) { return; }
-    hashMapInfos(hm);
+    hashmap_info(hm);
     for (size_t i = 0; i < hm->capacity; i += 1) {
         if (!List.length(hm->map[i])) { continue; }
         fprintf(stdout, " Bucket [%zu] : \n", i);
@@ -139,14 +139,14 @@ void displayHashMap(struct HashMap* hm)
 
 
 const struct HashMapLibrary HashMap = {
-    .new = newHashMap,
-    .put = addNewElement,
-    .get = getElement,
-    .iter = iteratorOverMap,
-    .remove = removeElement,
-    .free = freeHashMap,
-    .display = displayHashMap,
-    .info = hashMapInfos,
-    .size = getHashMapSize,
-    .capacity = getHashMapCapacity,
+    .new = hashmap_new,
+    .put = hashmap_put,
+    .get = hashmap_get,
+    .iter = hashmap_iterator,
+    .remove = hashmap_delete,
+    .free = hashmap_free,
+    .display = hashmap_full_display,
+    .info = hashmap_info,
+    .size = hashmap_get_size,
+    .capacity = hashmap_get_capacity,
 };

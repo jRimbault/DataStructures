@@ -2,15 +2,6 @@ cmake_minimum_required(VERSION 3.10)
 project(UnitTestingC)
 set(CMAKE_C_STANDARD 99)
 
-# Libraries
-add_library(
-        MainLib
-        lib/minunit.h
-        lib/library.c
-        lib/library.h
-        lib/Struct.c
-        lib/Struct.h
-)
 
 add_library(
         ListLibrary
@@ -69,11 +60,6 @@ add_library(
 find_package(Threads)
 target_link_libraries(ParallelLibrary TypeLessListLibrary ${CMAKE_THREAD_LIBS_INIT})
 
-# Main
-add_executable(PoolTests tests/main.c)
-target_include_directories(PoolTests PRIVATE lib)
-target_link_libraries(PoolTests MainLib ArgsLibrary HashmapLibrary ListLibrary)
-
 # List
 add_executable(ListTest tests/test_list.c)
 target_include_directories(ListTest PRIVATE lib)
@@ -108,7 +94,7 @@ add_executable(TypelessHashmapTest tests/test_typelesshashmap.c)
 target_include_directories(TypelessHashmapTest PRIVATE lib)
 target_link_libraries(TypelessHashmapTest TypeLessHashMap)
 
-# Async
+# Parallel
 add_executable(ParallelTest tests/test_parallel.c)
 target_include_directories(ParallelTest PRIVATE lib)
 target_link_libraries(ParallelTest ParallelLibrary)
