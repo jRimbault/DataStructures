@@ -6,7 +6,7 @@
 
 
 struct FileLibrary {
-    bool (* write)(char*, char*);
+    bool (* write)(char*, char*, size_t);
     size_t (* read)(char*, char**);
 };
 
