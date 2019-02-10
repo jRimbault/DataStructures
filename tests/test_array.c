@@ -9,8 +9,8 @@
 
 int isSorted(struct Array* a)
 {
-    for (long i = 1; i < a->size; i += 1) {
-        if (a->values[i - 1] > a->values[i]) {
+    for (size_t i = 1; i < Array.size(a); i += 1) {
+        if (Array.get(a, i - 1) > Array.get(a, i)) {
             return 0;
         }
     }
@@ -20,9 +20,9 @@ int isSorted(struct Array* a)
 
 void display(struct Array* a)
 {
-    printf("Array{size: %ld, capacity: %zu}\n", a->size, a->capacity);
-    for (long i = 0; i < a->size; i += 1) {
-        printf(" %ld", a->values[i]);
+    printf("Array{size: %ld, capacity: %zu}\n", Array.size(a), a->capacity);
+    for (size_t i = 0; i < Array.size(a); i += 1) {
+        printf(" %ld", Array.get(a, i));
     }
     printf("\n");
 }
@@ -33,7 +33,7 @@ static char* should_create_standard_array()
     size_t count = 5;
     long values[] = {1, 2, 3, 4, 5};
     struct Array* array = Array.new(values, count);
-    mu_assert("array size isn't 5", array->size == count);
+    mu_assert("array size isn't 5", Array.size(array) == count);
     mu_assert("array capacity should be 1024", array->capacity == ARRAY_STARTING_SIZE);
     Array.free(array);
     return 0;
@@ -45,10 +45,10 @@ static char* should_add_one_item()
     size_t count = 5;
     long values[] = {1, 2, 3, 4, 5};
     struct Array* array = Array.new(values, count);
-    Array.push(array, 6);
-    mu_assert("array size isn't 6", array->size == count + 1);
+    Array.add(array, 6);
+    mu_assert("array size isn't 6", Array.size(array) == count + 1);
     mu_assert("array capacity should be 1024", array->capacity == ARRAY_STARTING_SIZE);
-    mu_assert("last element should be 6", array->values[5] == 6);
+    mu_assert("last element should be 6", Array.get(array, 5) == 6);
     Array.free(array);
     return 0;
 }
@@ -65,7 +65,7 @@ static char* should_merge_two_arrays()
     struct Array* merge = Array.merge(array1, array2);
     Array.free(array1);
     Array.free(array2);
-    mu_assert("merger should have 10 size", merge->size == count1 + count2);
+    mu_assert("merger should have 10 size", Array.size(merge) == count1 + count2);
     mu_assert("array capacity should be 1024", merge->capacity == ARRAY_STARTING_SIZE);
     Array.free(merge);
     return 0;
@@ -79,10 +79,12 @@ static char* should_get_a_sub_array()
     struct Array* array = Array.new(values, count);
     struct Array* sub = Array.subArray(array, 2, 7);
     int is_sub = 1;
-    for (long i = 2; i < 7; i += 1) {
-        if (sub->values[i - 2] != array->values[i]) { is_sub = 0; }
+    for (size_t i = 2; i < 7; i += 1) {
+        if (Array.get(sub, i - 2) != Array.get(array, i)) {
+            is_sub = 0;
+        }
     }
-    mu_assert("sub array should have 5 size", sub->size == 5);
+    mu_assert("sub array should have 5 size", Array.size(sub) == 5);
     mu_assert("sub array should a copy of array[2:7]", is_sub);
     mu_assert("sub array capacity should be 1024", sub->capacity == ARRAY_STARTING_SIZE);
     Array.free(array);
@@ -100,7 +102,7 @@ static char* should_expand_array_fast()
     for (int i = 0; i < 250; i += 1) {
         merge = Array.merge(merge, array);
     }
-    mu_assert("array size isn't 1250", merge->size == 1250);
+    mu_assert("array size isn't 1250", Array.size(merge) == 1250);
     mu_assert("array capacity should be 2048", merge->capacity == ARRAY_STARTING_SIZE * 2);
     Array.free(array);
     Array.free(merge);
@@ -119,7 +121,7 @@ static char* should_sort_two_arrays()
     struct Array* merge = Array.sort(Array.merge(array1, array2));
     Array.free(array1);
     Array.free(array2);
-    mu_assert("array should have 10 size", merge->size == count1 + count2);
+    mu_assert("array should have 10 size", Array.size(merge) == count1 + count2);
     mu_assert("array capacity should be 1024", merge->capacity == ARRAY_STARTING_SIZE);
     mu_assert("array should be sorted", isSorted(merge));
     Array.free(merge);
@@ -139,8 +141,8 @@ static char* test_apply_fun()
     long values[] = {1, 2, 3, 4, 5};
     struct Array* array = Array.new(values, count);
     Array.forEach(array, &addOne);
-    for (long i = 0; i < count; i += 1) {
-        mu_assert("value should be incremented by one", array->values[i] == values[i] + 1);
+    for (size_t i = 0; i < count; i += 1) {
+        mu_assert("value should be incremented by one", Array.get(array, i) == values[i] + 1);
     }
     Array.free(array);
     return 0;

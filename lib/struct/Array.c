@@ -149,15 +149,32 @@ long array_reduce(struct Array* a, long (* reducer)(long, long), long b)
 }
 
 
+size_t array_get_size(struct Array* array)
+{
+    return array->size;
+}
+
+
+long array_get_index(struct Array* array, size_t i)
+{
+    if (i >= array->size) {
+        return NULL;
+    }
+    return array->values[i];
+}
+
+
 const struct ArrayLibrary Array = {
     .empty = array_new_empty,
     .new = array_new_from,
-    .push = array_add,
+    .add = array_add,
     .clone = array_clone,
     .forEach = array_for_each,
     .reduce = array_reduce,
     .merge = array_merge,
     .subArray = array_sub_array,
     .sort = array_sort,
+    .get = array_get_index,
+    .size = array_get_size,
     .free = array_free,
 };

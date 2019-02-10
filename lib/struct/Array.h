@@ -24,11 +24,7 @@ struct ArrayLibrary
     /**
      * Add one element to the array
      */
-    struct Array* (* push)(struct Array*, long);
-    /**
-     * Remove the last element from the array
-     */
-    struct Array* (* pop)(struct Array*);
+    struct Array* (* add)(struct Array*, long);
     /**
      * Merge two Arrays together
      */
@@ -53,6 +49,14 @@ struct ArrayLibrary
      * Return part of the array
      */
     struct Array* (* subArray)(struct Array*, size_t, size_t);
+    /**
+     * Get array size
+     */
+    size_t (* size)(struct Array*);
+    /**
+     * Get item at index
+     */
+    long (* get)(struct Array*, size_t);
     /**
      * Free allocated memory
      */
