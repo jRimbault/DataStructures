@@ -113,11 +113,10 @@ size_t list_add_node(struct List* list, struct Node* node)
     list->length += 1;
     if (!list->first) {
         list->first = node;
-        list->last = node;
     } else {
         list->last->next = node;
-        list->last = node;
     }
+    list->last = node;
     return list->length;
 }
 

@@ -13,23 +13,26 @@
     do { \
         char *message = test(); \
         tests_run++; \
-        if (message) return message; \
+        if (message) { \
+            errors += 1; \
+            fprintf(stderr, "error, %s\n", message); \
+        } \
     } while (0)
 
 #define mu_run(tests) \
+    int errors = 0; \
     int tests_run = 0; \
     int main() \
     { \
         char* result = tests(); \
-        if (result != 0) { \
-            fprintf(stderr, "error, %s\n", result); \
-        } else { \
-            printf("All tests passed\n"); \
+        if (!errors) { \
+            printf("All tests ran without errors\n"); \
         } \
-        printf("Tests run: %d\n", tests_run); \
+        printf("Tests run: %d, errors: %d\n", tests_run, errors); \
         return result != 0; \
     }
 
+extern int errors;
 extern int tests_run;
 
 #endif //CLANGPOOL_MINUNIT_H
