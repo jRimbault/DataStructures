@@ -72,6 +72,7 @@ struct List* list_new()
 {
     struct List* list = malloc(sizeof(struct List));
     list->first = NULL;
+    list->last = NULL;
     list->length = 0;
     return list;
 }
@@ -112,14 +113,11 @@ size_t list_add_node(struct List* list, struct Node* node)
     list->length += 1;
     if (!list->first) {
         list->first = node;
-        list->current = node;
-        return list->length;
+        list->last = node;
+    } else {
+        list->last->next = node;
+        list->last = node;
     }
-    struct Node* head = list->first;
-    while (head->next) {
-        head = head->next;
-    }
-    head->next = node;
     return list->length;
 }
 
