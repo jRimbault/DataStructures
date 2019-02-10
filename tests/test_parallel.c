@@ -12,7 +12,7 @@ struct List* exampleList()
 {
     struct List* list = List.new();
     for (size_t i = 0; i < 5; i += 1) {
-        List.add(list, Node.new("key", (void*) (i + 1)));
+        List.add(list, Node.new("key", i + 1));
     }
     return list;
 }

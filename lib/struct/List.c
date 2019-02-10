@@ -17,6 +17,7 @@ struct Node
 struct List
 {
     struct Node* first;
+    struct Node* last;
     struct Node* current;
     size_t length;
 };
@@ -234,11 +235,12 @@ struct List* list_merge(struct List* l1, struct List* l2)
 struct Node* list_iterator(struct List* list, size_t index)
 {
     if (!list) { return NULL; }
-    if (!list->current) { return NULL; }
     if (index >= list->length) { return NULL; }
-    struct Node* n = list->current;
-    list->current = list->current->next;
-    return n;
+    struct Node* head = list->first;
+    for (size_t i = 0; i < index; i += 1) {
+        head = head->next;
+    }
+    return head;
 }
 
 

@@ -5,7 +5,7 @@
 #include <zconf.h>
 
 #include "Parallel.h"
-#include "struct/TypeLessList.h"
+#include "struct/List.h"
 
 
 void join_all_workers(size_t nThreads, pthread_t* loop)

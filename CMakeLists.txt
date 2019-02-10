@@ -3,6 +3,10 @@ project(UnitTestingC)
 set(CMAKE_C_STANDARD 99)
 
 
+include_directories(
+        lib
+)
+
 add_library(
         ListLibrary
         lib/struct/List.c
@@ -40,34 +44,19 @@ add_library(
 )
 
 add_library(
-        TypeLessListLibrary
-        lib/struct/TypeLessList.c
-        lib/struct/TypeLessList.h
-)
-
-add_library(
-        TypeLessHashMap
-        lib/struct/TypeLessHashMap.c
-        lib/struct/TypeLessHashMap.h
-)
-target_link_libraries(TypeLessHashMap TypeLessListLibrary)
-
-add_library(
         ParallelLibrary
         lib/Parallel.c
         lib/Parallel.h
 )
 find_package(Threads)
-target_link_libraries(ParallelLibrary TypeLessListLibrary ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(ParallelLibrary ListLibrary ${CMAKE_THREAD_LIBS_INIT})
 
 # List
 add_executable(ListTest tests/test_list.c)
-target_include_directories(ListTest PRIVATE lib)
 target_link_libraries(ListTest ListLibrary)
 
 # Array
 add_executable(ArrayTest tests/test_array.c)
-target_include_directories(ArrayTest PRIVATE lib)
 target_link_libraries(ArrayTest ArrayLibrary)
 
 # Network
@@ -76,25 +65,16 @@ find_package(CURL REQUIRED)
 include_directories(${CURL_INCLUDE_DIR})
 target_link_libraries(NetworkLibrary ${CURL_LIBRARIES})
 add_executable(NetworkTest tests/test_network.c)
-target_include_directories(NetworkTest PRIVATE lib)
 target_link_libraries(NetworkTest NetworkLibrary)
 
 # Files
 add_executable(FileTest tests/test_file.c)
-target_include_directories(FileTest PRIVATE lib)
 target_link_libraries(FileTest FileLibrary)
 
 # HashMap
 add_executable(HashmapTest tests/test_hashmap.c)
-target_include_directories(HashmapTest PRIVATE lib)
 target_link_libraries(HashmapTest HashmapLibrary ListLibrary)
-
-# Typeless HashMap
-add_executable(TypelessHashmapTest tests/test_typelesshashmap.c)
-target_include_directories(TypelessHashmapTest PRIVATE lib)
-target_link_libraries(TypelessHashmapTest TypeLessHashMap)
 
 # Parallel
 add_executable(ParallelTest tests/test_parallel.c)
-target_include_directories(ParallelTest PRIVATE lib)
 target_link_libraries(ParallelTest ParallelLibrary)
