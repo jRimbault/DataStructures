@@ -23,7 +23,7 @@ static char* null_list()
 static char* init_empty_list()
 {
     struct List* list = List.new();
-    mu_assert("list length should be 0", List.length(list) == 0);
+    mu_assert("list size should be 0", List.length(list) == 0);
     List.free(list);
     return 0;
 }
@@ -33,7 +33,7 @@ static char* adding_element()
 {
     struct List* list = List.new();
     List.add(list, Node.new("", 1));
-    mu_assert("list length should be 1", List.length(list) == 1);
+    mu_assert("list size should be 1", List.length(list) == 1);
     List.free(list);
     return 0;
 }
@@ -42,7 +42,7 @@ static char* adding_element()
 static char* getting_list_length()
 {
     struct List* list = initTestingList();
-    mu_assert("list length should be 5", List.length(list) == 5);
+    mu_assert("list size should be 5", List.length(list) == 5);
     List.free(list);
     return 0;
 }
@@ -54,7 +54,7 @@ static char* getting_one_particular_element()
     List.add(list, Node.new("jacques", 26));
     struct Node* nothing = List.get(list, "keyDoesNotExists");
     struct Node* jacques = List.get(list, "jacques");
-    mu_assert("list length should be 6", List.length(list) == 6);
+    mu_assert("list size should be 6", List.length(list) == 6);
     mu_assert("node value should be 2", Node.value(nothing) == 0);
     mu_assert("node value should be 26", Node.value(jacques) == 26);
     List.free(list);
@@ -78,7 +78,7 @@ static char* list_should_contain()
 {
     struct List* list = initTestingList();
     List.add(list, Node.new("jacques", 26));
-    mu_assert("list length should be 6", List.length(list) == 6);
+    mu_assert("list size should be 6", List.length(list) == 6);
     mu_assert("list should contains key: 'jacques'", List.contains(list, "jacques"));
     List.free(list);
     return 0;
@@ -92,10 +92,10 @@ static char* removing_elements()
     List.add(list, Node.new("felix", 27));
     List.add(list, Node.new("naika", 28));
     List.add(list, Node.new("suzanne", 29));
-    mu_assert("list length should be 4", List.length(list) == 4);
+    mu_assert("list size should be 4", List.length(list) == 4);
     mu_assert("key 'jacques' should be 26", Node.value(List.get(list, "jacques")) == 26);
     List.remove(list, "jacques");
-    mu_assert("list length should be 3", List.length(list) == 3);
+    mu_assert("list size should be 3", List.length(list) == 3);
     mu_assert("list should not contain 'jacques'", List.contains(list, "jacques") == false);
     List.free(list);
     return 0;

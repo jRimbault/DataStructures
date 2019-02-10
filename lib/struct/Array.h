@@ -4,16 +4,15 @@
 #include <stdlib.h>
 
 
-#define ARRAY_STARTING_SIZE 1024
-
-struct Array {
+struct Array
+{
     long* values;
-    long length;
     size_t size;
+    size_t capacity;
 };
 
-
-struct ArrayLibrary {
+struct ArrayLibrary
+{
     /**
      * Make a new empty Array
      */
@@ -21,7 +20,7 @@ struct ArrayLibrary {
     /**
      * Make a new Array structure
      */
-    struct Array* (* new)(const long*, long);
+    struct Array* (* new)(const long*, size_t);
     /**
      * Add one element to the array
      */
@@ -53,13 +52,12 @@ struct ArrayLibrary {
     /**
      * Return part of the array
      */
-    struct Array* (* subArray)(struct Array*, long, long);
+    struct Array* (* subArray)(struct Array*, size_t, size_t);
     /**
      * Free allocated memory
      */
     void (* free)(struct Array*);
 };
-
 
 extern const struct ArrayLibrary Array;
 

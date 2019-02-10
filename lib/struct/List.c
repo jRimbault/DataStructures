@@ -246,7 +246,7 @@ char* list_to_chars(struct List* list)
 {
     if (!list || !list->first) { return NULL; }
     char* str = calloc(list->length * __MAX_KEY_LENGTH, sizeof(char));
-    sprintf(str, " {length: %zu}", list->length);
+    sprintf(str, " {size: %zu}", list->length);
     struct Node* head = list->first;
     while (head) {
         char* node = node_to_chars(head);
