@@ -1,16 +1,16 @@
 #include <stdio.h>
 
-#include "struct/Array.h"
+#include "struct/Vec.h"
 #include "minunit.h"
 
 
 #define ARRAY_STARTING_SIZE 1024
 
 
-int isSorted(struct Array* a)
+int isSorted(struct Vec* a)
 {
-    for (size_t i = 1; i < Array.size(a); i += 1) {
-        if (Array.get(a, i - 1) > Array.get(a, i)) {
+    for (size_t i = 1; i < Vec.size(a); i += 1) {
+        if (Vec.get(a, i - 1) > Vec.get(a, i)) {
             return 0;
         }
     }
@@ -18,11 +18,11 @@ int isSorted(struct Array* a)
 }
 
 
-void display(struct Array* a)
+void display(struct Vec* a)
 {
-    printf("Array{size: %ld, capacity: %zu}\n", Array.size(a), a->capacity);
-    for (size_t i = 0; i < Array.size(a); i += 1) {
-        printf(" %ld", Array.get(a, i));
+    printf("Vec{size: %ld, capacity: %zu}\n", Vec.size(a), a->capacity);
+    for (size_t i = 0; i < Vec.size(a); i += 1) {
+        printf(" %ld", Vec.get(a, i));
     }
     printf("\n");
 }
@@ -32,10 +32,10 @@ static char* should_create_standard_array()
 {
     size_t count = 5;
     long values[] = {1, 2, 3, 4, 5};
-    struct Array* array = Array.new(values, count);
-    mu_assert("array size isn't 5", Array.size(array) == count);
+    struct Vec* array = Vec.new(values, count);
+    mu_assert("array size isn't 5", Vec.size(array) == count);
     mu_assert("array capacity should be 1024", array->capacity == ARRAY_STARTING_SIZE);
-    Array.free(array);
+    Vec.free(array);
     return 0;
 }
 
@@ -44,12 +44,12 @@ static char* should_add_one_item()
 {
     size_t count = 5;
     long values[] = {1, 2, 3, 4, 5};
-    struct Array* array = Array.new(values, count);
-    Array.add(array, 6);
-    mu_assert("array size isn't 6", Array.size(array) == count + 1);
+    struct Vec* array = Vec.new(values, count);
+    Vec.add(array, 6);
+    mu_assert("array size isn't 6", Vec.size(array) == count + 1);
     mu_assert("array capacity should be 1024", array->capacity == ARRAY_STARTING_SIZE);
-    mu_assert("last element should be 6", Array.get(array, 5) == 6);
-    Array.free(array);
+    mu_assert("last element should be 6", Vec.get(array, 5) == 6);
+    Vec.free(array);
     return 0;
 }
 
@@ -58,16 +58,16 @@ static char* should_merge_two_arrays()
 {
     size_t count1 = 5;
     long values1[] = {1, 2, 3, 4, 5};
-    struct Array* array1 = Array.new(values1, count1);
+    struct Vec* array1 = Vec.new(values1, count1);
     size_t count2 = 5;
     long values2[] = {6, 7, 8, 9, 10};
-    struct Array* array2 = Array.new(values2, count2);
-    struct Array* merge = Array.merge(array1, array2);
-    Array.free(array1);
-    Array.free(array2);
-    mu_assert("merger should have 10 size", Array.size(merge) == count1 + count2);
+    struct Vec* array2 = Vec.new(values2, count2);
+    struct Vec* merge = Vec.merge(array1, array2);
+    Vec.free(array1);
+    Vec.free(array2);
+    mu_assert("merger should have 10 size", Vec.size(merge) == count1 + count2);
     mu_assert("array capacity should be 1024", merge->capacity == ARRAY_STARTING_SIZE);
-    Array.free(merge);
+    Vec.free(merge);
     return 0;
 }
 
@@ -76,19 +76,19 @@ static char* should_get_a_sub_array()
 {
     size_t count = 10;
     long values[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    struct Array* array = Array.new(values, count);
-    struct Array* sub = Array.subArray(array, 2, 7);
+    struct Vec* array = Vec.new(values, count);
+    struct Vec* sub = Vec.subArray(array, 2, 7);
     int is_sub = 1;
     for (size_t i = 2; i < 7; i += 1) {
-        if (Array.get(sub, i - 2) != Array.get(array, i)) {
+        if (Vec.get(sub, i - 2) != Vec.get(array, i)) {
             is_sub = 0;
         }
     }
-    mu_assert("sub array should have 5 size", Array.size(sub) == 5);
+    mu_assert("sub array should have 5 size", Vec.size(sub) == 5);
     mu_assert("sub array should a copy of array[2:7]", is_sub);
     mu_assert("sub array capacity should be 1024", sub->capacity == ARRAY_STARTING_SIZE);
-    Array.free(array);
-    Array.free(sub);
+    Vec.free(array);
+    Vec.free(sub);
     return 0;
 }
 
@@ -97,15 +97,15 @@ static char* should_expand_array_fast()
 {
     size_t count = 5;
     long values[] = {1, 2, 3, 4, 5};
-    struct Array* array = Array.new(values, count);
-    struct Array* merge = Array.empty();
+    struct Vec* array = Vec.new(values, count);
+    struct Vec* merge = Vec.empty();
     for (int i = 0; i < 250; i += 1) {
-        merge = Array.merge(merge, array);
+        merge = Vec.merge(merge, array);
     }
-    mu_assert("array size isn't 1250", Array.size(merge) == 1250);
+    mu_assert("array size isn't 1250", Vec.size(merge) == 1250);
     mu_assert("array capacity should be 2048", merge->capacity == ARRAY_STARTING_SIZE * 2);
-    Array.free(array);
-    Array.free(merge);
+    Vec.free(array);
+    Vec.free(merge);
     return 0;
 }
 
@@ -116,15 +116,15 @@ static char* should_sort_two_arrays()
     size_t count2 = 5;
     long values1[] = {3, 2, 6, 7, 5};
     long values2[] = {3, 4, 1, 9, 10};
-    struct Array* array1 = Array.new(values1, count1);
-    struct Array* array2 = Array.new(values2, count2);
-    struct Array* merge = Array.sort(Array.merge(array1, array2));
-    Array.free(array1);
-    Array.free(array2);
-    mu_assert("array should have 10 size", Array.size(merge) == count1 + count2);
+    struct Vec* array1 = Vec.new(values1, count1);
+    struct Vec* array2 = Vec.new(values2, count2);
+    struct Vec* merge = Vec.sort(Vec.merge(array1, array2));
+    Vec.free(array1);
+    Vec.free(array2);
+    mu_assert("array should have 10 size", Vec.size(merge) == count1 + count2);
     mu_assert("array capacity should be 1024", merge->capacity == ARRAY_STARTING_SIZE);
     mu_assert("array should be sorted", isSorted(merge));
-    Array.free(merge);
+    Vec.free(merge);
     return 0;
 }
 
@@ -139,12 +139,12 @@ static char* test_apply_fun()
 {
     size_t count = 5;
     long values[] = {1, 2, 3, 4, 5};
-    struct Array* array = Array.new(values, count);
-    Array.forEach(array, &addOne);
+    struct Vec* array = Vec.new(values, count);
+    Vec.forEach(array, &addOne);
     for (size_t i = 0; i < count; i += 1) {
-        mu_assert("value should be incremented by one", Array.get(array, i) == values[i] + 1);
+        mu_assert("value should be incremented by one", Vec.get(array, i) == values[i] + 1);
     }
-    Array.free(array);
+    Vec.free(array);
     return 0;
 }
 
@@ -165,12 +165,12 @@ static char* test_reduce_fun()
 {
     size_t count = 5;
     long values[] = {1, 2, 7, 4, 5};
-    struct Array* array = Array.new(values, count);
-    long odds = Array.reduce(array, &countOdds, 0);
-    long sum = Array.reduce(array, &sumAll, 0);
+    struct Vec* array = Vec.new(values, count);
+    long odds = Vec.reduce(array, &countOdds, 0);
+    long sum = Vec.reduce(array, &sumAll, 0);
     mu_assert("there should be 3 odds number", odds == 3);
     mu_assert("total sum should be 19", sum == 19);
-    Array.free(array);
+    Vec.free(array);
     return 0;
 }
 

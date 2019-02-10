@@ -14,9 +14,9 @@ add_library(
 )
 
 add_library(
-        ArrayLibrary
-        lib/struct/Array.c
-        lib/struct/Array.h
+        VecLibrary
+        lib/struct/Vec.c
+        lib/struct/Vec.h
 )
 
 add_library(
@@ -55,9 +55,9 @@ target_link_libraries(ParallelLibrary ListLibrary ${CMAKE_THREAD_LIBS_INIT})
 add_executable(ListTest tests/test_list.c)
 target_link_libraries(ListTest ListLibrary)
 
-# Array
-add_executable(ArrayTest tests/test_array.c)
-target_link_libraries(ArrayTest ArrayLibrary)
+# Vec
+add_executable(VecTest tests/test_vec.c)
+target_link_libraries(VecTest VecLibrary)
 
 # Network
 set(CURL_LIBRARY "-lcurl")

@@ -2,7 +2,7 @@
 #include <memory.h>
 #include <stdio.h>
 
-#include "Array.h"
+#include "Vec.h"
 
 
 #define ARRAY_STARTING_SIZE 1024
@@ -18,9 +18,9 @@ size_t getStartSize(size_t count)
 }
 
 
-struct Array* array_new_empty()
+struct Vec* array_new_empty()
 {
-    struct Array* new = calloc(1, sizeof(struct Array));
+    struct Vec* new = calloc(1, sizeof(struct Vec));
     new->capacity = ARRAY_STARTING_SIZE;
     new->size = 0;
     new->values = calloc(ARRAY_STARTING_SIZE, sizeof(long));
@@ -28,9 +28,9 @@ struct Array* array_new_empty()
 }
 
 
-struct Array* array_new(size_t size)
+struct Vec* array_new(size_t size)
 {
-    struct Array* new = calloc(1, sizeof(struct Array));
+    struct Vec* new = calloc(1, sizeof(struct Vec));
     new->capacity = getStartSize(size);
     new->size = 0;
     new->values = calloc(new->capacity, sizeof(long));
@@ -38,9 +38,9 @@ struct Array* array_new(size_t size)
 }
 
 
-struct Array* array_new_from(const long* values, size_t length)
+struct Vec* array_new_from(const long* values, size_t length)
 {
-    struct Array* new = array_new(getStartSize(length));
+    struct Vec* new = array_new(getStartSize(length));
     new->size = length;
     for (int i = 0; i < length; i += 1) {
         new->values[i] = values[i];
@@ -49,22 +49,22 @@ struct Array* array_new_from(const long* values, size_t length)
 }
 
 
-void array_free(struct Array* a)
+void array_free(struct Vec* a)
 {
     free(a->values);
     free(a);
 }
 
 
-struct Array* array_expand(struct Array* array)
+struct Vec* array_expand(struct Vec* array)
 {
-    struct Array* new = array_new_from(array->values, array->capacity);
+    struct Vec* new = array_new_from(array->values, array->capacity);
     array_free(array);
     return new;
 }
 
 
-struct Array* array_add(struct Array* a, long n)
+struct Vec* array_add(struct Vec* a, long n)
 {
     if (a->size == a->capacity) {
         a = array_expand(a);
@@ -75,15 +75,15 @@ struct Array* array_add(struct Array* a, long n)
 }
 
 
-struct Array* array_clone(struct Array* a)
+struct Vec* array_clone(struct Vec* a)
 {
     return array_new_from(a->values, a->size);
 }
 
 
-struct Array* array_merge(struct Array* a, struct Array* b)
+struct Vec* array_merge(struct Vec* a, struct Vec* b)
 {
-    struct Array* new = array_new(a->size + b->size);
+    struct Vec* new = array_new(a->size + b->size);
     long i = 0;
     long j = 0;
     size_t k = 0;
@@ -106,22 +106,22 @@ struct Array* array_merge(struct Array* a, struct Array* b)
 }
 
 
-struct Array* array_sub_array(struct Array* a, size_t i, size_t j)
+struct Vec* array_sub_array(struct Vec* a, size_t i, size_t j)
 {
     size_t length = j - i;
-    struct Array* new = array_new(length);
+    struct Vec* new = array_new(length);
     memcpy(new->values, &a->values[i], length * sizeof(long));
     new->size = length;
     return new;
 }
 
 
-struct Array* array_sort(struct Array* a)
+struct Vec* array_sort(struct Vec* a)
 {
     if (a->size < 2) { return a; }
 
-    struct Array* half1 = array_sub_array(a, 0, a->size / 2);
-    struct Array* half2 = array_sub_array(a, a->size / 2, a->size);
+    struct Vec* half1 = array_sub_array(a, 0, a->size / 2);
+    struct Vec* half2 = array_sub_array(a, a->size / 2, a->size);
 
     a = array_merge(array_sort(half1), array_sort(half2));
     array_free(half1);
@@ -130,7 +130,7 @@ struct Array* array_sort(struct Array* a)
 }
 
 
-struct Array* array_for_each(struct Array* a, long (* fun)(long))
+struct Vec* array_for_each(struct Vec* a, long (* fun)(long))
 {
     for (long i = 0; i < a->size; i += 1) {
         a->values[i] = fun(a->values[i]);
@@ -139,7 +139,7 @@ struct Array* array_for_each(struct Array* a, long (* fun)(long))
 }
 
 
-long array_reduce(struct Array* a, long (* reducer)(long, long), long b)
+long array_reduce(struct Vec* a, long (* reducer)(long, long), long b)
 {
     long r = b;
     for (long i = 0; i < a->size; i += 1) {
@@ -149,22 +149,22 @@ long array_reduce(struct Array* a, long (* reducer)(long, long), long b)
 }
 
 
-size_t array_get_size(struct Array* array)
+size_t array_get_size(struct Vec* array)
 {
     return array->size;
 }
 
 
-long array_get_index(struct Array* array, size_t i)
+long array_get_index(struct Vec* array, size_t i)
 {
     if (i >= array->size) {
-        return NULL;
+        return 0;
     }
     return array->values[i];
 }
 
 
-const struct ArrayLibrary Array = {
+const struct VecLibrary Vec = {
     .empty = array_new_empty,
     .new = array_new_from,
     .add = array_add,

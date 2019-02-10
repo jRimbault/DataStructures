@@ -4,65 +4,65 @@
 #include <stdlib.h>
 
 
-struct Array
+struct Vec
 {
     long* values;
     size_t size;
     size_t capacity;
 };
 
-struct ArrayLibrary
+struct VecLibrary
 {
     /**
      * Make a new empty Array
      */
-    struct Array* (* empty)();
+    struct Vec* (* empty)();
     /**
      * Make a new Array structure
      */
-    struct Array* (* new)(const long*, size_t);
+    struct Vec* (* new)(const long*, size_t);
     /**
      * Add one element to the array
      */
-    struct Array* (* add)(struct Array*, long);
+    struct Vec* (* add)(struct Vec*, long);
     /**
      * Merge two Arrays together
      */
-    struct Array* (* merge)(struct Array*, struct Array*);
+    struct Vec* (* merge)(struct Vec*, struct Vec*);
     /**
      * Sort array
      */
-    struct Array* (* sort)(struct Array*);
+    struct Vec* (* sort)(struct Vec*);
     /**
      * Clone array
      */
-    struct Array* (* clone)(struct Array*);
+    struct Vec* (* clone)(struct Vec*);
     /**
      * Apply a function to each element of the array
      */
-    struct Array* (* forEach)(struct Array*, long (*)(long));
+    struct Vec* (* forEach)(struct Vec*, long (*)(long));
     /**
     * Reduce array to one number
     */
-    long (* reduce)(struct Array*, long (*)(long, long), long);
+    long (* reduce)(struct Vec*, long (*)(long, long), long);
     /**
      * Return part of the array
      */
-    struct Array* (* subArray)(struct Array*, size_t, size_t);
+    struct Vec* (* subArray)(struct Vec*, size_t, size_t);
     /**
      * Get array size
      */
-    size_t (* size)(struct Array*);
+    size_t (* size)(struct Vec*);
     /**
      * Get item at index
      */
-    long (* get)(struct Array*, size_t);
+    long (* get)(struct Vec*, size_t);
     /**
      * Free allocated memory
      */
-    void (* free)(struct Array*);
+    void (* free)(struct Vec*);
 };
 
-extern const struct ArrayLibrary Array;
+extern const struct VecLibrary Vec;
 
 #endif //UNITTESTINGC_ARRAY_H
