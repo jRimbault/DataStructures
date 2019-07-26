@@ -44,6 +44,12 @@ add_library(
 )
 
 add_library(
+        StringLibrary
+        lib/struct/String.c
+        lib/struct/String.h
+        lib/struct/String/VecString.c lib/struct/String/VecString.h)
+
+add_library(
         ParallelLibrary
         lib/Parallel.c
         lib/Parallel.h
@@ -78,3 +84,7 @@ target_link_libraries(HashmapTest HashmapLibrary ListLibrary)
 # Parallel
 add_executable(ParallelTest tests/test_parallel.c)
 target_link_libraries(ParallelTest ParallelLibrary)
+
+# String
+add_executable(StringTest tests/test_string.c)
+target_link_libraries(StringTest StringLibrary)

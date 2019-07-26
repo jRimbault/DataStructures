@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <memory.h>
-#include <stdio.h>
 
 #include "Vec.h"
 
