@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup env
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            cmake \
+            libcurl4-openssl-dev
+      - name: Build tests
+        run: |
+          mkdir build && cd build
+          cmake ..
+          make HashmapTest ListTest VecTest
+      - name: Run tests
+        run: |
+          cd build
+          for test_suite in *Test; do
+            echo "$test_suite"
+            ./"$test_suite" || true
+          done
